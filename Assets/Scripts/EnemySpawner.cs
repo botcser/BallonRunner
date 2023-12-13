@@ -1,87 +1,87 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using Assets.Scripts;
 using Assets.Scripts.Common;
 using Assets.Scripts.Data;
 using UnityEngine;
-using static UnityEditor.Progress;
 
-public class EnemySpawner : MonoBehaviour
+namespace Assets.Scripts
 {
-    public ItemsPool ItemsPool;
-    public RectTransform BackgroundRectTransform;
-    public CancellationTokenSource CancellationTokenSource;
+    public class EnemySpawner : MonoBehaviour
+    {
+        public ItemsPool ItemsPool;
+        public RectTransform BackgroundRectTransform;
+        public CancellationTokenSource CancellationTokenSource;
 
-    public static EnemySpawner Instance;
+        public static EnemySpawner Instance;
 
-    [SerializeField] private List<RectTransform> _spawnLinePoints;
+        [SerializeField] private List<RectTransform> _spawnLinePoints;
     
-    private readonly List<Item> _items = new();
+        private readonly List<Item> _items = new();
 
-    void Start()
-    {
-        Instance = this;
-    }
-
-    public void Init(float lineStep)
-    {
-        CancellationTokenSource = new CancellationTokenSource();
-        _spawnLinePoints[0].anchoredPosition = new Vector2(-(lineStep + 20), 0);
-        _spawnLinePoints[2].anchoredPosition = new Vector3(lineStep + 20, 0);
-    }
-
-    public void Reset()
-    {
-        _items.ForEach(i => Destroy(i.gameObject));
-        _items.Clear();
-        ItemsPool.Clear();
-        CancellationTokenSource?.Dispose();
-    }
-
-    public IEnumerator SpawnStaticItems(List<ItemProto> itemPrototypes, float delaySecs)
-    {
-        while (true)
+        void Awake()
         {
-            if (CancellationTokenSource.Token.IsCancellationRequested)
-            {
-                StopAllCoroutines();
-                break;
-            }
-
-            SpawnItem(itemPrototypes.Random(), _spawnLinePoints);
-
-            yield return new WaitForSeconds(delaySecs);
+            Instance = this;
         }
-    }
 
-    private void SpawnItem(ItemProto randomProto, List<RectTransform> spawnLinePoints)
-    {
-        var freeItem = ItemsPool.GetItem(randomProto.Type);
-
-        if (freeItem != null)
+        public void Init(float lineStep)
         {
-            ItemsPool.RemoveItem(freeItem);
-            freeItem.transform.position = spawnLinePoints.Random().position;
-            freeItem.transform.SetParent(BackgroundRectTransform);
+            CancellationTokenSource = new CancellationTokenSource();
+            _spawnLinePoints[0].anchoredPosition = new Vector2(-(lineStep + 20), 0);
+            _spawnLinePoints[2].anchoredPosition = new Vector3(lineStep + 20, 0);
         }
-        else
+
+        public void Reset()
         {
-            var prefab = Instantiate(randomProto.Prefab, spawnLinePoints.Random());
+            _items.ForEach(i => Destroy(i.gameObject));
+            _items.Clear();
+            ItemsPool.Clear();
+            CancellationTokenSource?.Dispose();
+        }
 
-            if (randomProto.Enemy)
+        public IEnumerator SpawnStaticItems(List<ItemProto> itemPrototypes, float delaySecs)
+        {
+            while (true)
             {
-                prefab.AddComponent<EnemyItem>();
+                if (CancellationTokenSource.IsCancellationRequested)
+                {
+                    StopAllCoroutines();
+                    break;
+                }
+
+                SpawnItem(itemPrototypes.Random(), _spawnLinePoints);
+
+                yield return new WaitForSeconds(delaySecs);
             }
+        }
 
-            var item = prefab.GetComponent<Item>();
+        private void SpawnItem(ItemProto randomProto, List<RectTransform> spawnLinePoints)
+        {
+            var freeItem = ItemsPool.GetItem(randomProto.Type);
 
-            item.Type = randomProto.Type;
-            item.Enemy = randomProto.Enemy;
-            item.transform.SetParent(BackgroundRectTransform);
+            if (freeItem != null)
+            {
+                ItemsPool.RemoveItem(freeItem);
+                freeItem.transform.position = spawnLinePoints.Random().position;
+                freeItem.transform.SetParent(BackgroundRectTransform);
+            }
+            else
+            {
+                var prefab = Instantiate(randomProto.Prefab, spawnLinePoints.Random());
 
-            _items.Add(item);
+                if (randomProto.Enemy)
+                {
+                    prefab.AddComponent<EnemyItem>();
+                }
+
+                var item = prefab.GetComponent<Item>();
+
+                item.Type = randomProto.Type;
+                item.Enemy = randomProto.Enemy;
+                item.transform.SetParent(BackgroundRectTransform);
+
+                _items.Add(item);
+            }
         }
     }
 }

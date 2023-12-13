@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.PlayerSettings;
 
 namespace Assets.Scripts.Common.Tweens
 {

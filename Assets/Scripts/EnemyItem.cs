@@ -1,3 +1,4 @@
+using Assets.ECS;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -12,7 +13,14 @@ namespace Assets.Scripts
             }
             else if (collision.tag == "Player")
             {
-                Game.Instance.GameOver();
+                if (EcsGame.Instance != null)
+                {
+                    EcsGame.Instance.GameOver();
+                }
+                else if (Game.Instance != null)
+                {
+                    Game.Instance.GameOver();
+                }
             }
         }
     }

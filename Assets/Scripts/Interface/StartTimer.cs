@@ -1,32 +1,33 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using Assets.Scripts.Interface;
 using UnityEngine;
-using UnityEngine.UI;
 
-
-public class StartTimer : MonoBehaviour
+namespace Assets.Scripts.Interface
 {
-    public BaseInterface Parent;
-
-    public void Run(Action callback = null)
+    public class StartTimer : MonoBehaviour
     {
-        StartCoroutine(Timer(callback));
-    }
-
-    private IEnumerator Timer(Action callback = null)
-    {
-        for (var i = 0; i < transform.childCount; i++)
+        public GameObject Timers;
+        public GameObject Panel;
+        
+        public void Run(Action callback = null)
         {
-            transform.GetChild(i).gameObject.SetActive(true);
-
-            yield return new WaitForSeconds(1f);
-
-            transform.GetChild(i).gameObject.SetActive(false);
+            Panel.SetActive(true);
+            StartCoroutine(Timer(callback));
         }
+        
+        private IEnumerator Timer(Action callback = null)
+        {
+            for (var i = 0; i < Timers.transform.childCount; i++)
+            {
+                Timers.transform.GetChild(i).gameObject.SetActive(true);
 
-        callback?.Invoke();
-        Parent.Close();
+                yield return new WaitForSeconds(1f);
+
+                Timers.transform.GetChild(i).gameObject.SetActive(false);
+            }
+
+            callback?.Invoke();
+            Panel.SetActive(false);
+        }
     }
 }

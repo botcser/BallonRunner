@@ -22,13 +22,16 @@ public class Game : MonoBehaviour
     private List<ItemProto> _staticItemPrototypes = new();
     private bool _playing;
 
-    public void Start()
+    public void Awake()
     {
         Instance = this;
+    }
+
+    public void Start()
+    {
         _lineStep = Canvas.rect.width / 4;
         _staticItemPrototypes = Resources.LoadAll<ItemProto>("StaticItems").ToList();
         _backgroundFromY = BackgroundPositionController.From;
-        Play();
     }
 
     public void Update()
@@ -54,22 +57,18 @@ public class Game : MonoBehaviour
         EnemySpawner.Instance.Reset();
         BackgroundPositionController.From = _backgroundFromY;
         Balloon.Reset();
-
-        BackgroundPositionController.enabled = true;
-        EnemySpawner.Instance.Init(_lineStep);
-        StartCoroutine(EnemySpawner.Instance.SpawnStaticItems(_staticItemPrototypes, 5f));
-
-        //StartTimer.Run(() =>
-        //{
-        //    BackgroundPositionController.enabled = true;
-        //    EnemySpawner.Instance.Init(_lineStep);
-        //    StartCoroutine(EnemySpawner.Instance.SpawnStaticItems(_staticItemPrototypes, 5f));
-        //});
+        
+        StartTimer.Run(() =>
+        {
+            BackgroundPositionController.enabled = true;
+            EnemySpawner.Instance.Init(_lineStep);
+            StartCoroutine(EnemySpawner.Instance.SpawnStaticItems(_staticItemPrototypes, 5f));
+        });
     }
 
     public void GameOver()
     {
-        EndGame("YOU WIN!.\nRETRY?");
+        EndGame("YOU LOSE!.\nRETRY?");
     }
 
     private void EndGame(string message)

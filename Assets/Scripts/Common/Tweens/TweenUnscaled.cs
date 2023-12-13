@@ -22,8 +22,14 @@ namespace Assets.Scripts.Common.Tweens
             var component = target.GetComponents<TweenUnscaled>().SingleOrDefault(i => i._type == 0) ?? target.gameObject.AddComponent<TweenUnscaled>();
             var time = Time.unscaledTime;
 
-            component._update = () => { target.color = from + (to - from) * component.AnimationCurve.Evaluate((Time.unscaledTime - time) / duration); };
-            component._complete = () => { target.color = to; };
+            component._update = () =>
+            {
+                target.color = from + (to - from) * component.AnimationCurve.Evaluate((Time.unscaledTime - time) / duration);
+            };
+            component._complete = () =>
+            {
+                target.color = to;
+            };
             component._timeout = Time.unscaledTime + duration;
             component._type = 0;
             component.enabled = true;

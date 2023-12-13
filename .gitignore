@@ -4,11 +4,12 @@ Obj/
 Logs/
 Xcode/
 Builds/
+Resources/
 Screenshots/
 build/
 AssetBundles/
-WinBuild/
-WebGL/
+Assets/Firebase/
+Assets/Firebase/
 .vs/
 
 *.csproj
@@ -18,3 +19,4 @@ WebGL/
 *.user
 *.userprefs
 *.booproj
+Assets/Firebase/Plugins/x86_64/FirebaseCppApp-10_0_1.bundle
